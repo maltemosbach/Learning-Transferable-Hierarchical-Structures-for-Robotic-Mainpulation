@@ -67,7 +67,9 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
 
         # Save agent
         agent.save_model(episode)
-        agent.save_lowest_layer(episode)
+        save_new_low_layer = True
+        if agent.hparams["env"] == "FetchPush-v1" or agent.hparams["env"] == "FetchPickAndPlace-v1" and save_new_low_layer == True:
+            agent.save_lowest_layer(episode)
            
         # Finish evaluating policy if tested prior batch
         if mix_train_test and batch % TEST_FREQ == 0:
@@ -122,7 +124,7 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
 
 
             # - - - - Q-vals for FetchPush and FetchPickAndPlace - - - - 
-            elif env.name == "FetchPush-v1" or env.name == "FetchPush_obstacle-v1" or env.name == "FetchPush_obstacle-v2" or env.name == "FetchPickAndPlace-v1" or env.name == "FetchPickAndPlace_obstacle-v1" or env.name == "FetchPickAndPlace_obstacle-v2":
+            elif env.name == "FetchPush-v1" or env.name == "FetchPush_variation1-v1" or env.name == "FetchPush_variation2-v1" or env.name == "FetchPickAndPlace-v1" or env.name == "FetchPickAndPlace_variation1-v1" or env.name == "FetchPickAndPlace_variation2-v1":
                 g = np.array([1.15, 0.6, 0.5])
                 o = np.zeros([20, 28, 25])
 
@@ -140,8 +142,7 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
                             if agent.layers[1].policy is not None:
                                 Q_vals_layer_1[i, j] = agent.layers[1].policy.get_Q_values_u(o, g, u[i, j, :], use_target_net=False)
                             elif agent.layers[1].critic is not None:
-                                Q_vals_layer_0[i, j] = agent.layers[1].critic.get_target_Q_value_1(np.reshape(o,(1,25)), np.reshape(g,(1,3)), np.reshape(u[i, j, :],(1,3)))
-                                Q_vals_layer_1[i, j] = agent.layers[1].critic.get_target_Q_value_2(np.reshape(o,(1,25)), np.reshape(g,(1,3)), np.reshape(u[i, j, :],(1,3)))
+                                Q_vals_layer_1[i, j] = agent.layers[1].critic.get_target_Q_value(np.reshape(o,(1,25)), np.reshape(g,(1,3)), np.reshape(u[i, j, :],(1,3)))
 
             Q_val_table[(batch//Q_VAL_SAMPLING_FREQ), 0, :, :] = Q_vals_layer_0
             Q_val_table[(batch//Q_VAL_SAMPLING_FREQ), 1, :, :] = Q_vals_layer_1

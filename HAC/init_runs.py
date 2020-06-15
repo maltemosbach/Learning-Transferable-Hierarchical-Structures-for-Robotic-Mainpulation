@@ -50,7 +50,7 @@ def init_runs(date, hparams, num_runs, data_dir, FLAGS, NUM_BATCH, save_models, 
         if hparams["env"] == "FetchReach-v1":
             project_state_to_end_goal = lambda sim, state: state[0:3]
             project_state_to_subgoal = lambda sim, state: np.array([1.55 if state[0] > 1.55 else 1.05 if state[0] < 1.05 else state[0], 1.1 if state[1] > 1.1 else 0.4 if state[1] < 0.4 else state[1], 1.1 if state[2] > 1.1 else 0.4 if state[2] < 0.4 else state[2]])
-        elif hparams["env"] == "FetchPush-v1" or hparams["env"] == "FetchPush_obstacle-v1" or hparams["env"] == "FetchPush_obstacle-v2" or hparams["env"] == "FetchPickAndPlace-v1" or hparams["env"] == "FetchPickAndPlace_obstacle-v1" or hparams["env"] == "FetchPickAndPlace_obstacle-v2":
+        elif hparams["env"] == "FetchPush-v1" or hparams["env"] == "FetchPush_variation1-v1" or hparams["env"] == "FetchPush_variation2-v1" or hparams["env"] == "FetchPickAndPlace-v1" or hparams["env"] == "FetchPickAndPlace_variation1-v1" or hparams["env"] == "FetchPickAndPlace_variation2-v1":
             project_state_to_end_goal = lambda sim, state: state[3:6]
             project_state_to_subgoal = lambda sim, state: np.array([1.55 if state[3] > 1.55 else 1.05 if state[3] < 1.05 else state[3], 1.1 if state[4] > 1.1 else 0.4 if state[4] < 0.4 else state[4], 1.1 if state[5] > 1.1 else 0.4 if state[5] < 0.4 else state[5]])
         else:

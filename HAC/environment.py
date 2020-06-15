@@ -115,8 +115,6 @@ class Environment():
     # Visualize all subgoals
     def display_subgoals(self,subgoals):
         # subgoals array contains [subgoal1, subgoal2, endgoal]
-        #print("self.subgoal_bounds:", self.subgoal_bounds)
-        print("subgoals:", subgoals)
 
         if len(subgoals) == 2:
             sites_offset = (self.gymEnv.env.sim.data.site_xpos - self.gymEnv.env.sim.model.site_pos).copy()

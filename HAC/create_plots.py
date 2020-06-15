@@ -179,7 +179,7 @@ for j in range(len(date_paths)):
 
             # Layer 0
             if not np.array_equal(first_Q_val_array[0, 0, :, :], np.ones((20,28))):
-                # Q_vals for the choosen steps have actually be written
+                # Q_vals for the chosen steps have actually be written
 
                 methods = ['gaussian']
 

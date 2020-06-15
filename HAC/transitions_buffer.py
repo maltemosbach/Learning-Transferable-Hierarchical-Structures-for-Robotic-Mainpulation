@@ -4,7 +4,7 @@ import time
 
 class TransitionsBuffer:
     def __init__(self, buffer_shapes, size_in_transitions, replay_k, reward_fun, sampling_strategy="HAC"):
-        """Buffer that stores episodes of varying lenght
+        """Buffer that stores episodes of varying length
         Args:
             buffer_shapes (dict of ints): the shape of all arguments of the buffer
             size_in_transitions (int): the size of the buffer, measured in transitions

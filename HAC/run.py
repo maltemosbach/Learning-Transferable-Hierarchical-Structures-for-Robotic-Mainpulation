@@ -26,19 +26,19 @@ The key hyperparameters are:
     use_target (array of booleans): Whether each layer should use target networks
     sg_test_perc (float): Percentage of subgoal testing transitions
     buffer (array of strs): Which buffer each layer should use ('experience', 'replay', 'transitions')
-    modules (array of strs): Modules each layer should use (ddpg, actorcritic right now)
+    modules (array of strs): Modules each layer should use (baselineDDPG, actorcritic right now)
 """
 hyperparameters = {
-        "env"          : ['FetchReach-v1'],
-        "ac_n"         : [0.2],
-        "sg_n"         : [0.2],
+        "env"          : ['FetchPush-v1'],
+        "ac_n"         : [0.3],
+        "sg_n"         : [0.3],
         "replay_k"     : [4],
         "layers"       : [2],
         "use_target"   : [[False, True]],
-        "sg_test_perc" : [0.1],
+        "sg_test_perc" : [0.2],
         "buffer"       : [['transitions', 'transitions']],
         "samp_str"     : ['HAC'],
-        "modules"      : [['ddpg', 'actorcritic']]
+        "modules"      : [['baselineDDPG', 'actorcritic']]
 
     }
 
@@ -54,14 +54,14 @@ Parameters for the runs
     FLAGS.num_test_episodes (int): Number of testing episodes after every epoch of training
 """
 NUM_RUNS = 1
-NUM_BATCH = 101
+NUM_BATCH = 201
 
 FLAGS.time_scale = 10
 FLAGS.max_actions = 50
 
 FLAGS.subgoal_penalty = -FLAGS.time_scale
-FLAGS.num_exploration_episodes = 10
-FLAGS.num_test_episodes = 20
+FLAGS.num_exploration_episodes = 100
+FLAGS.num_test_episodes = 100
 
 
 """ 3. ADDITIONAL OPTIONS

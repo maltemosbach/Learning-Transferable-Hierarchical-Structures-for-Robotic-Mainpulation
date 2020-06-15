@@ -1,8 +1,9 @@
 import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow.keras
 import numpy as np
 from utils import nn_layer
 from baselines.her.normalizer import Normalizer
+tf.disable_v2_behavior()
 
 
 class Actor():
