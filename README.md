@@ -1,1 +1,1 @@
-# Learning Transferable Hierarchical Structures for-Robotic Mainpulation
+# Learning Transferable Hierarchical Structures for Robotic Mainpulation
