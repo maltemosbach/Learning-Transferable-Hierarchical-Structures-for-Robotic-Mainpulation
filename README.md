@@ -4,8 +4,8 @@
 
 FetchPush | FetchPickAndPlace
 ------------ | -------------
-![FetchPush_variation1-v1](https://github.com/maltemosbach/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/blob/master/images/FetchPush_variation1-v1.png) | ![FetchickAndPlace_variation1-v1](https://github.com/maltemosbach/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/blob/master/images/FetchPickAndPlace_variation1-v1.png)
-![FetchPush_variation2-v1](https://github.com/maltemosbach/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/blob/master/images/FetchPush_variation2-v1.png) | ![FetchickAndPlace_variation2-v1](https://github.com/maltemosbach/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/blob/master/images/FetchPickAndPlace_variation2-v1.png)
+![FetchPush_variation1-v1](https://github.com/maltemosbach/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/blob/master/docs/images/FetchPush_variation1-v1.png) | ![FetchickAndPlace_variation1-v1](https://github.com/maltemosbach/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/blob/master/docs/images/FetchPickAndPlace_variation1-v1.png)
+![FetchPush_variation2-v1](https://github.com/maltemosbach/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/blob/master/docs/images/FetchPush_variation2-v1.png) | ![FetchickAndPlace_variation2-v1](https://github.com/maltemosbach/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/blob/master/docs/images/FetchPickAndPlace_variation2-v1.png)
 
 ## Knowledge visualiozation
 (Add image and explanation here)
