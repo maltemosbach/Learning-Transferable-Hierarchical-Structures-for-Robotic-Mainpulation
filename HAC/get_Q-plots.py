@@ -24,11 +24,11 @@ def on_press(event):
     global clicked_on
     xpress, ypress = event.xdata, event.ydata
 
-    if xpress >= object_pos_proj[1]-1 and xpress <= object_pos_proj[1]+1 and ypress >= object_pos_proj[0]-1 and ypress <= object_pos_proj[0]+1:
+    if xpress >= object_pos_proj[0]-1 and xpress <= object_pos_proj[0]+1 and ypress >= object_pos_proj[1]-1 and ypress <= object_pos_proj[1]+1:
         clicked_on = "object"
-    elif xpress >= gripper_pos_proj[1]-1 and xpress <= gripper_pos_proj[1]+1 and ypress >= gripper_pos_proj[0]-1 and ypress <= gripper_pos_proj[0]+1:
+    elif xpress >= gripper_pos_proj[0]-1 and xpress <= gripper_pos_proj[0]+1 and ypress >= gripper_pos_proj[1]-1 and ypress <= gripper_pos_proj[1]+1:
         clicked_on = "gripper"
-    elif xpress >= goal_pos_proj[1]-1 and xpress <= goal_pos_proj[1]+1 and ypress >= goal_pos_proj[0]-1 and ypress <= goal_pos_proj[0]+1:
+    elif xpress >= goal_pos_proj[0]-1 and xpress <= goal_pos_proj[0]+1 and ypress >= goal_pos_proj[1]-1 and ypress <= goal_pos_proj[1]+1:
         clicked_on = "goal"
     else:
         clicked_on = "nothing"
@@ -50,32 +50,27 @@ def on_release(event):
         pass
     else:
         if clicked_on == "object":
-            object_pos_proj[1] = xpress
-            object_pos_proj[0] = ypress
-            object.set_xy((object_pos_proj[1]-1, object_pos_proj[0]-1))
-            object_pos[0] = ((object_pos_proj[0] + 0.5) /20) * 0.5 + 1.05
-            object_pos[1] = ((object_pos_proj[1] + 0.5) /28) * 0.7 + 0.4
+            object_pos_proj[0] = xpress
+            object_pos_proj[1] = ypress
+            object.set_xy((object_pos_proj[0]-1, object_pos_proj[1]-1))
+            object_pos = proj_mpl2env(object_pos_proj)
 
         elif clicked_on == "gripper":
-            gripper_pos_proj[1] = xpress
-            gripper_pos_proj[0] = ypress
-            gripper_1.set_xy((gripper_pos_proj[1]-1, gripper_pos_proj[0]-1))
-            gripper_2.set_xy((gripper_pos_proj[1], gripper_pos_proj[0]-1))
-            gripper_pos[0] = ((gripper_pos_proj[0] + 0.5) / 20) * 0.5 + 1.05
-            gripper_pos[1] = ((gripper_pos_proj[1] + 0.5) / 28) * 0.7 + 0.4
+            gripper_pos_proj[0] = xpress
+            gripper_pos_proj[1] = ypress
+            gripper_1.set_xy((gripper_pos_proj[0]-1, gripper_pos_proj[1]-1))
+            gripper_2.set_xy((gripper_pos_proj[0], gripper_pos_proj[1]-1))
+            gripper_pos = proj_mpl2env(gripper_pos_proj)
 
         elif clicked_on == "goal":
-            goal_pos_proj[1] = xpress
-            goal_pos_proj[0] = ypress
-            goal.set_xy((goal_pos_proj[1] - 1, goal_pos_proj[0] - 1))
-            goal_pos[0] = ((goal_pos_proj[0] + 0.5) / 20) * 0.5 + 1.05
-            goal_pos[1] = ((goal_pos_proj[1] + 0.5) / 28) * 0.7 + 0.4
+            goal_pos_proj[0] = xpress
+            goal_pos_proj[1] = ypress
+            goal.set_xy((goal_pos_proj[0] - 1, goal_pos_proj[1] - 1))
+            goal_pos = proj_mpl2env(goal_pos_proj)
 
         Q_vals_layer_1 = generate_Q_map(object_pos, gripper_pos, goal_pos)
 
         im.set_data(Q_vals_layer_1)
-
-
 
     fig.canvas.draw()
 
@@ -103,6 +98,22 @@ def generate_Q_map(object_pos, gripper_pos, goal_pos):
 
     return Q_vals_layer_1
 
+def proj_env2mpl(pos):
+    assert pos.shape[0] == 3
+    proj_pos = np.zeros(3)
+    proj_pos[0] = (((pos[1] - 0.4) / 0.7) *28) - 0.5
+    proj_pos[1] = (((pos[0] - 1.05) / 0.5) *20) - 0.5
+    proj_pos[2] = pos[2]
+    return proj_pos
+
+def proj_mpl2env(pos):
+    assert pos.shape[0] == 3
+    proj_pos = np.zeros(3)
+    proj_pos[0] = (((pos[1] + 0.5) / 20) *0.5) + 1.05
+    proj_pos[1] = (((pos[0] + 0.5) / 28) *0.7) + 0.4
+    proj_pos[2] = pos[2]
+    return proj_pos
+
 
 
 FLAGS = parse_options()
@@ -111,7 +122,7 @@ FLAGS.contin = True
 
 
 hyperparameters = {
-    "env": ['FetchPush-v1'],
+    "env": ['FetchPush_variation2-v1'],
     "ac_n": [0.2],
     "sg_n": [0.2],
     "replay_k": [4],
@@ -156,15 +167,12 @@ subgoal_thresholds = np.array([dist_threshold, dist_threshold, dist_threshold])
 env = Environment(hparams["env"], project_state_to_end_goal, end_goal_thresholds, subgoal_bounds, project_state_to_subgoal, subgoal_thresholds, FLAGS.max_actions, FLAGS.show)
 agent = Agent(FLAGS,env, writer, writer_graph, sess, hparams)
 
-
-
 # Define position of object, gripper and goal for the critic to evaluate
 object_pos = np.array([1.15, 0.55, 0.425])
 gripper_pos = np.array([1.25, 0.45, 0.425])
 goal_pos = np.array([1.25, 0.88, 0.425])
 
 Q_vals_layer_1 = generate_Q_map(object_pos, gripper_pos, goal_pos)
-
 
 
 fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(8, 8), )
@@ -186,19 +194,28 @@ axs.set_title("Layer 1 " + "(" + str(hparams["env"]) + ")")
 
 
 # Convert positions
-object_pos_proj = np.array([(((object_pos[0] - 1.05) / 0.5) *20) - 0.5, (((object_pos[1] - 0.4) / 0.7) *28) - 0.5])
-gripper_pos_proj = np.array([(((gripper_pos[0] - 1.05) / 0.5) *20) - 0.5, (((gripper_pos[1] - 0.4) / 0.7) *28) - 0.5])
-goal_pos_proj = np.array([(((goal_pos[0] - 1.05) / 0.5) *20) - 0.5, (((goal_pos[1] - 0.4) / 0.7) *28) - 0.5])
+object_pos_proj = proj_env2mpl(object_pos)
+gripper_pos_proj = proj_env2mpl(gripper_pos)
+goal_pos_proj = proj_env2mpl(goal_pos)
 
-# Generate patches
-object = patches.Rectangle((object_pos_proj[1]-1, object_pos_proj[0]-1), 2, 2, linewidth=2, edgecolor='#000000', facecolor='#1a1a1a')
-gripper_1 = patches.Rectangle((gripper_pos_proj[1]-1, gripper_pos_proj[0]-1), 1, 2, linewidth=2, edgecolor='#000000', facecolor='#999999')
-gripper_2 = patches.Rectangle((gripper_pos_proj[1], gripper_pos_proj[0]-1), 1, 2, linewidth=2, edgecolor='#000000', facecolor='#999999')
-goal = patches.Rectangle((goal_pos_proj[1]-1, goal_pos_proj[0]-1), 2, 2, linewidth=2, edgecolor='#000000', facecolor='#ffff00')
+# Generate patches for object, gripper and goal
+object = patches.Rectangle((object_pos_proj[0]-1, object_pos_proj[1]-1), 2, 2, alpha=0.7, linewidth=2, edgecolor='#000000', facecolor='#1a1a1a')
+gripper_1 = patches.Rectangle((gripper_pos_proj[0]-1, gripper_pos_proj[1]-1), 1, 2, alpha=0.7,linewidth=2, edgecolor='#000000', facecolor='#999999')
+gripper_2 = patches.Rectangle((gripper_pos_proj[0], gripper_pos_proj[1]-1), 1, 2, alpha=0.7,linewidth=2, edgecolor='#000000', facecolor='#999999')
+goal = patches.Rectangle((goal_pos_proj[0]-1, goal_pos_proj[1]-1), 2, 2, alpha=0.7,linewidth=2, edgecolor='#000000', facecolor='#ffff00')
 axs.add_patch(object)
 axs.add_patch(gripper_1)
 axs.add_patch(gripper_2)
 axs.add_patch(goal)
+
+if hparams["env"] == "FetchPush_variation1-v1":
+    hole_pos_proj = proj_env2mpl(np.array([1.2, 0.675, 0.4]))
+    hole = patches.Rectangle((hole_pos_proj[0], hole_pos_proj[1]), 6, 8, alpha=0.5,linewidth=1, hatch='/', fill=False, edgecolor='#000000')
+    axs.add_patch(hole)
+elif hparams["env"] == "FetchPush_variation2-v1":
+    hole_pos_proj = proj_env2mpl(np.array([1.25, 0.4, 0.4]))
+    hole = patches.Rectangle((hole_pos_proj[0], hole_pos_proj[1]), 14, 4, alpha=0.5,linewidth=1, hatch='/', fill=False, edgecolor='#000000')
+    axs.add_patch(hole)
 
 # Create colorbars
 cbar = axs.figure.colorbar(im, ax=axs, orientation="horizontal",
