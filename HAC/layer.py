@@ -111,10 +111,6 @@ class Layer():
             self.critic = Critic(sess, env, self.layer_number, FLAGS, hparams)
             self.actor = Actor(sess, env, self.batch_size, self.layer_number, FLAGS, hparams)
             self.policy = None
-        elif hparams["modules"][self.layer_number] == "TD3":
-            self.critic = CriticTD3(sess, env, self.layer_number, FLAGS, hparams)
-            self.actor = ActorTD3(sess, env, self.batch_size, self.layer_number, FLAGS, hparams)
-            self.policy = None
         else:
             assert False
 
@@ -193,8 +189,7 @@ class Layer():
                     action = self.add_noise(
                         self.policy.get_actions(o, g, use_target_net=self.hparams["use_target"][self.layer_number]),
                         env)
-                elif self.hparams["modules"][self.layer_number] == "actorcritic" or self.hparams["modules"][
-                    self.layer_number] == "TD3":
+                elif self.hparams["modules"][self.layer_number] == "actorcritic":
                     if self.hparams["use_target"][self.layer_number]:
                         action = self.add_noise(
                             self.actor.get_target_action(np.reshape(self.current_state, (1, len(self.current_state))),
@@ -489,6 +484,29 @@ class Layer():
             self.policy.o_stats.recompute_stats()
             self.policy.g_stats.recompute_stats()
 
+        elif update_stats and self.actor is not None and self.critic is not None:
+            self.actor.o_stats.update(episode_batch['o'][0])
+            self.actor.o_stats.recompute_stats()
+            self.actor.o_stats_mean = np.mean(self.sess.run([self.actor.o_stats.mean]))
+            self.actor.o_stats_std = np.mean(self.sess.run([self.actor.o_stats.std]))
+            self.actor.g_stats.update(episode_batch['g'][0])
+            self.actor.g_stats.recompute_stats()
+            self.actor.g_stats_mean = np.mean(self.sess.run([self.actor.g_stats.mean]))
+            self.actor.g_stats_std = np.mean(self.sess.run([self.actor.g_stats.std]))
+
+            self.critic.o_stats.update(episode_batch['o'][0])
+            self.critic.o_stats.recompute_stats()
+            self.critic.o_stats_mean = np.mean(self.sess.run([self.critic.o_stats.mean]))
+            self.critic.o_stats_std = np.mean(self.sess.run([self.critic.o_stats.std]))
+            self.critic.g_stats.update(episode_batch['g'][0])
+            self.critic.g_stats.recompute_stats()
+            self.critic.g_stats_mean = np.mean(self.sess.run([self.critic.g_stats.mean]))
+            self.critic.g_stats_std = np.mean(self.sess.run([self.critic.g_stats.std]))
+            self.critic.u_stats.update(episode_batch['u'][0])
+            self.critic.u_stats.recompute_stats()
+            self.critic.u_stats_mean = np.mean(self.sess.run([self.critic.u_stats.mean]))
+            self.critic.u_stats_std = np.mean(self.sess.run([self.critic.u_stats.std]))
+
     def store_episode_erb(self, episode_batch, update_stats=True):
 
         self.erb.store_episode(episode_batch)
@@ -499,6 +517,31 @@ class Layer():
 
             self.policy.o_stats.recompute_stats()
             self.policy.g_stats.recompute_stats()
+
+        elif update_stats and self.actor is not None and self.critic is not None:
+            self.actor.o_stats.update(episode_batch['o'][0])
+            self.actor.o_stats.recompute_stats()
+            self.actor.o_stats_mean = np.mean(self.sess.run([self.actor.o_stats.mean]))
+            self.actor.o_stats_std = np.mean(self.sess.run([self.actor.o_stats.std]))
+            self.actor.g_stats.update(episode_batch['g'][0])
+            self.actor.g_stats.recompute_stats()
+            self.actor.g_stats_mean = np.mean(self.sess.run([self.actor.g_stats.mean]))
+            self.actor.g_stats_std = np.mean(self.sess.run([self.actor.g_stats.std]))
+
+            self.critic.o_stats.update(episode_batch['o'][0])
+            self.critic.o_stats.recompute_stats()
+            self.critic.o_stats_mean = np.mean(self.sess.run([self.critic.o_stats.mean]))
+            self.critic.o_stats_std = np.mean(self.sess.run([self.critic.o_stats.std]))
+            self.critic.g_stats.update(episode_batch['g'][0])
+            self.critic.g_stats.recompute_stats()
+            self.critic.g_stats_mean = np.mean(self.sess.run([self.critic.g_stats.mean]))
+            self.critic.g_stats_std = np.mean(self.sess.run([self.critic.g_stats.std]))
+            self.critic.u_stats.update(episode_batch['u'][0])
+            self.critic.u_stats.recompute_stats()
+            self.critic.u_stats_mean = np.mean(self.sess.run([self.critic.u_stats.mean]))
+            self.critic.u_stats_std = np.mean(self.sess.run([self.critic.u_stats.std]))
+
+
 
     # Update actor and critic networks
     def learn(self, num_updates):

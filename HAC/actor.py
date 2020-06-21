@@ -1,6 +1,7 @@
 import tensorflow.compat.v1 as tf
 import tensorflow.keras
 import numpy as np
+import time
 from utils import nn_layer
 from baselines.her.normalizer import Normalizer
 tf.disable_v2_behavior()
@@ -39,7 +40,6 @@ class Actor():
         self.o_stats_std = 0
         self.g_stats_mean = 0
         self.g_stats_std = 0
-
 
 
         # Determine range of actor network outputs.  This will be used to configure outer layer of neural network
@@ -96,9 +96,6 @@ class Actor():
 
 
 
-
-
-
     def get_action(self, state, goal):
         actions = self.sess.run(self.main,
                 feed_dict={
@@ -125,25 +122,11 @@ class Actor():
                     self.action_derivs: action_derivs
                 })
 
-        o = np.asarray(state)
-        g = np.asarray(goal)
-        #f = np.concatenate((state, goal), axis=1)
-
-        self.o_stats.update(o)
-        self.o_stats.recompute_stats()
-        self.o_stats_mean = np.mean(self.sess.run([self.o_stats.mean]))
-        self.o_stats_std = np.mean(self.sess.run([self.o_stats.std]))
-        self.g_stats.update(g)
-        self.g_stats.recompute_stats()
-        self.g_stats_mean = np.mean(self.sess.run([self.g_stats.mean]))
-        self.g_stats_std = np.mean(self.sess.run([self.g_stats.std]))
-
         return len(weights)
 
 
     # def create_nn(self, state, goal, name='actor'):
     def _create_network(self, state, goal, name=None):
-
         o = self.o_stats.normalize(state)
         g = self.g_stats.normalize(goal)
         input = tf.concat(axis=1, values=[o, g])

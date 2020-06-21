@@ -98,8 +98,6 @@ class Critic():
         self.gradient = tf.gradients(self.main, self.action_ph)
 
 
-
-
     def get_Q_value(self,state, goal, action):
         return self.sess.run(self.main,
                 feed_dict={
@@ -107,6 +105,7 @@ class Critic():
                     self.goal_ph: goal,
                     self.action_ph: action
                 })[0]
+
 
     def get_target_Q_value(self,state, goal, action):
         return self.sess.run(self.target,
@@ -137,7 +136,6 @@ class Critic():
             wanted_qs[i] = max(min(wanted_qs[i],0), self.q_limit)
             assert wanted_qs[i] <= 0 and wanted_qs[i] >= self.q_limit, "Q-Value target not within proper bounds"
 
-
         self.loss_val, _ = self.sess.run([self.loss, self.train],
                 feed_dict={
                     self.state_ph: old_states,
@@ -146,25 +144,6 @@ class Critic():
                     self.wanted_qs: wanted_qs 
                 })
 
-        o = np.asarray(old_states)
-        g = np.asarray(goals)
-        u = np.asarray(old_actions)
-
-        self.o_stats.update(o)
-        self.o_stats.recompute_stats()
-        self.o_stats_mean = np.mean(self.sess.run([self.o_stats.mean]))
-        self.o_stats_std = np.mean(self.sess.run([self.o_stats.std]))
-        self.g_stats.update(g)
-        self.g_stats.recompute_stats()
-        self.g_stats_mean = np.mean(self.sess.run([self.g_stats.mean]))
-        self.g_stats_std = np.mean(self.sess.run([self.g_stats.std]))
-        self.u_stats.update(u)
-        self.u_stats.recompute_stats()
-        self.u_stats_mean = np.mean(self.sess.run([self.u_stats.mean]))
-        self.u_stats_std = np.mean(self.sess.run([self.u_stats.std]))
-
-
-        
 
     def get_gradients(self, state, goal, action):
         grads = self.sess.run(self.gradient,
@@ -176,12 +155,12 @@ class Critic():
 
         return grads[0]
 
+
     # Function creates the graph for the critic function.  The output uses a sigmoid, which bounds the Q-values to between [-Policy Length, 0].
     def _create_network(self, state, goal, action, name=None):
-
         o = self.o_stats.normalize(state)
         g = self.g_stats.normalize(goal)
-        u = self.u_stats.normalize(action)
+        u = action
         input = tf.concat(axis=1, values=[o, g, u])
 
         if name is None:

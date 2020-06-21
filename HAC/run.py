@@ -29,9 +29,9 @@ The key hyperparameters are:
     modules (array of strs): Modules each layer should use (baselineDDPG, actorcritic right now)
 """
 hyperparameters = {
-        "env"          : ['FetchPush-v1'],
-        "ac_n"         : [0.3],
-        "sg_n"         : [0.3],
+        "env"          : ['FetchPickAndPlace_variation1-v1', 'FetchPickAndPlace_variation2-v1'],
+        "ac_n"         : [0.2],
+        "sg_n"         : [0.2],
         "replay_k"     : [4],
         "layers"       : [2],
         "use_target"   : [[False, True]],
@@ -54,7 +54,7 @@ Parameters for the runs
     FLAGS.num_test_episodes (int): Number of testing episodes after every epoch of training
 """
 NUM_RUNS = 1
-NUM_BATCH = 201
+NUM_BATCH = 501
 
 FLAGS.time_scale = 10
 FLAGS.max_actions = 50

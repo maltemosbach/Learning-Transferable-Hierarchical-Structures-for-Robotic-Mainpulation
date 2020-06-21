@@ -67,8 +67,8 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
 
         # Save agent
         agent.save_model(episode)
-        save_new_low_layer = True
-        if agent.hparams["env"] == "FetchPush-v1" or agent.hparams["env"] == "FetchPickAndPlace-v1" and save_new_low_layer == True:
+        save_new_low_layer = False
+        if (agent.hparams["env"] == "FetchPush-v1" or agent.hparams["env"] == "FetchPickAndPlace-v1") and save_new_low_layer == True:
             agent.save_lowest_layer(episode)
            
         # Finish evaluating policy if tested prior batch
