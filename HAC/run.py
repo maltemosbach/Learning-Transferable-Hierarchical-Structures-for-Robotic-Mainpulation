@@ -60,7 +60,7 @@ Parameters for the runs
 NUM_RUNS = multiprocessing.cpu_count() // len(hparams)
 NUM_BATCH = 501
 
-FLAGS.np = multiprocessing.cpu_count() // len(hparams)
+FLAGS.np = multiprocessing.cpu_count()
 
 FLAGS.time_scale = 10
 FLAGS.max_actions = 50
