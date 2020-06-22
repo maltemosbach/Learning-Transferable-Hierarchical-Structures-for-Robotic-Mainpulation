@@ -158,8 +158,8 @@ class Critic():
 
     # Function creates the graph for the critic function.  The output uses a sigmoid, which bounds the Q-values to between [-Policy Length, 0].
     def _create_network(self, state, goal, action, name=None):
-        o = self.o_stats.normalize(state)
-        g = self.g_stats.normalize(goal)
+        o = state
+        g = goal
         u = action
         input = tf.concat(axis=1, values=[o, g, u])
 

@@ -127,8 +127,8 @@ class Actor():
 
     # def create_nn(self, state, goal, name='actor'):
     def _create_network(self, state, goal, name=None):
-        o = self.o_stats.normalize(state)
-        g = self.g_stats.normalize(goal)
+        o = state
+        g = goal
         input = tf.concat(axis=1, values=[o, g])
         
         if name is None:

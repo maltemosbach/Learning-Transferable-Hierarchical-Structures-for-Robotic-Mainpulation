@@ -27,9 +27,10 @@ The key hyperparameters are:
     sg_test_perc (float): Percentage of subgoal testing transitions
     buffer (array of strs): Which buffer each layer should use ('experience', 'replay', 'transitions')
     modules (array of strs): Modules each layer should use (baselineDDPG, actorcritic right now)
+    tl-mode (str): Mode for transfer-learning (shared_LL, separate_LL, shared_LL_noHAT)
 """
 hyperparameters = {
-        "env"          : ['FetchPickAndPlace_variation1-v1', 'FetchPickAndPlace_variation2-v1'],
+        "env"          : ['FetchPush_variation1-v1'],
         "ac_n"         : [0.2],
         "sg_n"         : [0.2],
         "replay_k"     : [4],
@@ -38,10 +39,12 @@ hyperparameters = {
         "sg_test_perc" : [0.2],
         "buffer"       : [['transitions', 'transitions']],
         "samp_str"     : ['HAC'],
-        "modules"      : [['baselineDDPG', 'actorcritic']]
+        "modules"      : [['baselineDDPG', 'actorcritic']],
+        "tl-mode"      : ['separate_LL']
 
     }
 
+hparams = _get_combinations(hyperparameters)
 
 """ 2. PARAMETERS FOR RUNS AND TIME-SCALES
 Parameters for the runs
@@ -53,8 +56,11 @@ Parameters for the runs
     FLAGS.num_exploration_episodes (int): Number of training episodes in one batch/ epoch
     FLAGS.num_test_episodes (int): Number of testing episodes after every epoch of training
 """
-NUM_RUNS = 1
+
+NUM_RUNS = multiprocessing.cpu_count() // len(hparams)
 NUM_BATCH = 501
+
+FLAGS.np = multiprocessing.cpu_count() // len(hparams)
 
 FLAGS.time_scale = 10
 FLAGS.max_actions = 50
@@ -83,7 +89,6 @@ save_models = True
 
 
 
-hparams = _get_combinations(hyperparameters)
 
 if FLAGS.test == False and FLAGS.retrain == False:
     FLAGS.retrain = True

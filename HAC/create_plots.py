@@ -76,9 +76,9 @@ for j in range(len(date_paths)):
         # plot only every n-th element
         n=1
         current_sr_array = current_sr_array[:,::n]
-        current_sr_array = current_sr_array[:, :16]
+        #current_sr_array = current_sr_array[:, :16]
         test_graph = test_graph[::n]
-        test_graph = test_graph[:16]
+        #test_graph = test_graph[:16]
 
 
 
