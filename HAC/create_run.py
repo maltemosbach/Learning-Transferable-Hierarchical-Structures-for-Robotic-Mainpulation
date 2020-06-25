@@ -65,11 +65,14 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
                 if mix_train_test and batch % TEST_FREQ == 0:
                     successful_episodes += 1            
 
+
+
         # Save agent
-        agent.save_model(episode)
         save_new_low_layer = False
-        if (agent.hparams["env"] == "FetchPush-v1" or agent.hparams["env"] == "FetchPickAndPlace-v1") and save_new_low_layer == True:
-            agent.save_lowest_layer(episode)
+        if not batch % TEST_FREQ == 0:
+            agent.save_model(batch)
+            if (agent.hparams["env"] == "FetchPush-v1" or agent.hparams["env"] == "FetchPickAndPlace-v1") and save_new_low_layer == True:
+                agent.save_lowest_layer(batch)
            
         # Finish evaluating policy if tested prior batch
         if mix_train_test and batch % TEST_FREQ == 0:
@@ -80,8 +83,10 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
             writer.add_scalar("success_rate", success_rate/100, ind)
             Critic_losses = agent.log_tb(ind)
             critic_loss_layer0[ind] = Critic_losses[0]
+            agent.layers[0].current_sr = success_rate/100
             if agent.hparams["layers"] > 1:
                 critic_loss_layer1[ind] = Critic_losses[1]
+                agent.layers[1].current_sr = success_rate / 100
 
             ind += 1
             agent.FLAGS.test = False

@@ -36,6 +36,9 @@ class Layer():
         self.hparams = hparams
         self.writer = writer
 
+        # Trying new exploration technique
+        self.current_sr = 0.0
+
         self.dims = {"g": 0, "o": 0, "u": 0}
         self.dims["o"] = env.state_dim
 
@@ -132,6 +135,10 @@ class Layer():
 
         assert len(action) == len(action_bounds), "Action bounds must have same dimension as action"
         assert len(action) == len(self.noise_perc), "Noise percentage vector must have same dimension as action"
+
+        # Trying out varying exploration
+        if self.FLAGS.sr_based_exploration and self.layer_number == 1:
+            self.noise_perc = [(self.hparams["sg_n"] + (1.0 - self.hparams["sg_n"])*(1.0-self.current_sr)) for i in range(3)]
 
         # Add noise to action and ensure remains within bounds
         for i in range(len(action)):

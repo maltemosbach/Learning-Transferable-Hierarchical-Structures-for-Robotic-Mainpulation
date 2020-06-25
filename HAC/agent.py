@@ -106,8 +106,8 @@ class Agent():
         model_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="")
         model_vars_lowest_layer = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="DDPG_layer_0")
 
-        self.saver = tf.compat.v1.train.Saver(model_vars)
-        self.saver_lowest_layer = tf.compat.v1.train.Saver(model_vars_lowest_layer)
+        self.saver = tf.compat.v1.train.Saver(model_vars, max_to_keep=1000)
+        self.saver_lowest_layer = tf.compat.v1.train.Saver(model_vars_lowest_layer, max_to_keep=1000)
 
         # Set up directory for saving models
         self.model_dir = os.getcwd() + '/models'
@@ -117,7 +117,7 @@ class Agent():
 
         if not os.path.exists(self.model_dir):
             os.makedirs(self.model_dir)
-        if not os.path.exists(self.model_dir_lowest_layer):
+        if not os.path.exists(self.model_dir_lowest_layer) and (self.hparams["env"] == "FetchPush-v1" or self.hparams["env"] == "FetchPickAndPlace-v1"):
             os.makedirs(self.model_dir_lowest_layer)
 
         # Initialize actor/critic networks

@@ -14,7 +14,7 @@ FLAGS = parse_options()
 
 
 #  #  #  #  #  D E F I N E    A L L    P A R A M E T E R S  #  #  #  #  #
-  
+
 
 """ 1. HYPERPARAMETERS
 The key hyperparameters are:
@@ -27,12 +27,12 @@ The key hyperparameters are:
     sg_test_perc (float): Percentage of subgoal testing transitions
     buffer (array of strs): Which buffer each layer should use ('experience', 'replay', 'transitions')
     modules (array of strs): Modules each layer should use (baselineDDPG, actorcritic right now)
-    tl-mode (str): Mode for transfer-learning (shared_LL, separate_LL, shared_LL_noHAT)
+    tl-mode (str): Mode for transfer-learning, which is only relevant when the --transfer flag is used (shared_LL, separate_LL, shared_LL_noHAT)
 """
 hyperparameters = {
-        "env"          : ['FetchPush_variation1-v1'],
+        "env"          : ['FetchPickAndPlace_variation2-v1'],
         "ac_n"         : [0.2],
-        "sg_n"         : [0.2],
+        "sg_n"         : [0.4],
         "replay_k"     : [4],
         "layers"       : [2],
         "use_target"   : [[False, True]],
@@ -40,7 +40,7 @@ hyperparameters = {
         "buffer"       : [['transitions', 'transitions']],
         "samp_str"     : ['HAC'],
         "modules"      : [['baselineDDPG', 'actorcritic']],
-        "tl-mode"      : ['separate_LL']
+        "tl-mode"      : ['shared_LL', 'separate_LL']
 
     }
 
@@ -57,10 +57,10 @@ Parameters for the runs
     FLAGS.num_test_episodes (int): Number of testing episodes after every epoch of training
 """
 
-NUM_RUNS = multiprocessing.cpu_count() // len(hparams)
+NUM_RUNS = 1 #multiprocessing.cpu_count() // len(hparams)
 NUM_BATCH = 501
 
-FLAGS.np = multiprocessing.cpu_count()
+#FLAGS.np = multiprocessing.cpu_count()
 
 FLAGS.time_scale = 10
 FLAGS.max_actions = 50
@@ -68,6 +68,8 @@ FLAGS.max_actions = 50
 FLAGS.subgoal_penalty = -FLAGS.time_scale
 FLAGS.num_exploration_episodes = 100
 FLAGS.num_test_episodes = 100
+
+FLAGS.sr_based_exploration = False
 
 
 """ 3. ADDITIONAL OPTIONS
@@ -122,7 +124,7 @@ if FLAGS.retrain:
                 p = multiprocessing.Process(target=init_runs, args=(date, hparams[i], NUM_RUNS, datadir + "/graph_" + str(i), FLAGS, NUM_BATCH, save_models, ))
                 processes.append(p)
                 p.start()
-                
+
             for process in processes:
                 process.join()
 
@@ -137,7 +139,7 @@ if FLAGS.retrain:
                     p = multiprocessing.Process(target=init_runs, args=(date, hparams[i], 1, datadir + "/graph_" + str(i), FLAGS, NUM_BATCH, save_models, j,))
                     processes.append(p)
                     p.start()
-                
+
             for process in processes:
                 process.join()
 
