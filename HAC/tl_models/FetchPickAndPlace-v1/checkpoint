@@ -1,2 +1,3 @@
-model_checkpoint_path: "/Users/maltemosbach/PycharmProjects/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/HAC/tl_models/FetchPickAndPlace-v1/HAC.ckpt-99"
-all_model_checkpoint_paths: "/Users/maltemosbach/PycharmProjects/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/HAC/tl_models/FetchPickAndPlace-v1/HAC.ckpt-99"
+model_checkpoint_path: "/Users/maltemosbach/PycharmProjects/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/HAC/tl_models/FetchPickAndPlace-v1/HAC.ckpt-199"
+
+all_model_checkpoint_paths: "/Users/maltemosbach/PycharmProjects/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/HAC/tl_models/FetchPickAndPlace-v1/HAC.ckpt-199"

@@ -32,15 +32,15 @@ The key hyperparameters are:
 hyperparameters = {
         "env"          : ['FetchPickAndPlace_variation2-v1'],
         "ac_n"         : [0.2],
-        "sg_n"         : [0.4],
+        "sg_n"         : [0.2],
         "replay_k"     : [4],
         "layers"       : [2],
         "use_target"   : [[False, True]],
-        "sg_test_perc" : [0.2],
+        "sg_test_perc" : [0.15],
         "buffer"       : [['transitions', 'transitions']],
         "samp_str"     : ['HAC'],
         "modules"      : [['baselineDDPG', 'actorcritic']],
-        "tl-mode"      : ['shared_LL', 'separate_LL']
+        "tl-mode"      : ['separate_LL']
 
     }
 
@@ -58,7 +58,7 @@ Parameters for the runs
 """
 
 NUM_RUNS = 1 #multiprocessing.cpu_count() // len(hparams)
-NUM_BATCH = 501
+NUM_BATCH = 201
 
 #FLAGS.np = multiprocessing.cpu_count()
 
