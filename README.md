@@ -44,3 +44,45 @@ command, the agent will alternate between training and testing. if multiple runs
 python run.py --test --show
 ```
 will then display the trained agent.
+
+---
+
+## Experiments and Graphs
+The tl_models contain a Pushing layer, which has been trained for 50 batches (5000 episodes) and a Picking and Placing layer, which has been trained for 100 batches (10,000 episodes).
+I have the models for all training batches, so it is possible to choose an earlier (or later) state for transfer learning to optimize performance. 
+
+Below is list of all experiments and their state and parameters I am currently intending to use.
+
+### Experiments
+
+- [x] Generate pre-trained pushing agent
+- [x] Generate pre-trained picking and placing agent
+- [ ] Run <span style="font-family: monaco">FetchPush_variation1-v1</span> without transfer for 401 batches (= 20,000 training episodes)
+- [ ] Run <span style="font-family: monaco">FetchPush_variation2-v1</span> without transfer for 401 batches (= 20,000 training episodes)
+- [ ] Run <span style="font-family: monaco">FetchPickAndPlace_variation1-v1</span> without transfer for 401 batches (= 20,000 training episodes)
+- [ ] Run <span style="font-family: monaco">FetchPickAndPlace_variation2-v1</span> without transfer for 401 batches (= 20,000 training episodes)
+- [ ] Run <span style="font-family: monaco">FetchPush_variation1-v1</span> with transfer for 401 batches (= 20,000 training episodes)
+- [ ] Run <span style="font-family: monaco">FetchPush_variation2-v1</span> with transfer for 401 batches (= 20,000 training episodes)
+- [ ] Run <span style="font-family: monaco">FetchPickAndPlace_variation1-v1</span> with transfer for 201 batches (= 10,000 training episodes)
+- [ ] Run <span style="font-family: monaco">FetchPickAndPlace_variation2-v1</span> with transfer for 201 batches (= 10,000 training episodes)
+
+The 401 batch runs should take no longer than 16 hours on the server, since last time about 250 batches were completed after 8 hours. If we say we use a maximum of 80 cores, that would equal 10 identical runs for each experiment and all experiments would be completed inside 1 job. Therefore, I would just have to verify that all parameters and pre-trained models generate good results and add the transfer flag to the hparams. 
+
+```python
+hyperparameters = {
+        "env"          : ['Fetch...'],
+        "ac_n"         : [0.2],
+        "sg_n"         : [0.2],
+        "replay_k"     : [4],
+        "layers"       : [2],
+        "use_target"   : [[False, True]],
+        "sg_test_perc" : [0.15],
+        "buffer"       : [['transitions', 'transitions']],
+        "samp_str"     : ['HAC'],
+        "modules"      : [['baselineDDPG', 'actorcritic']],
+        "tl-mode"      : ['separate_LL']
+
+    }
+```
+
+
