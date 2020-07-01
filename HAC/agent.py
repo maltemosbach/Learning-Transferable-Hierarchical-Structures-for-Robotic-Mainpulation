@@ -124,11 +124,11 @@ class Agent():
         self.sess.run(tf.compat.v1.global_variables_initializer())
 
         # If not retraining or transfer learning, restore all weights
-        if self.FLAGS.retrain == False and self.FLAGS.transfer == False and self.FLAGS.contin == False:
+        if self.FLAGS.retrain == False and self.hparams["use_tl"] == False and self.FLAGS.contin == False:
             self.saver.restore(self.sess, tf.train.latest_checkpoint(self.model_dir))
 
         # For transfer learning, restore lowest layer
-        if self.FLAGS.transfer == True:
+        if self.hparams["use_tl"] == True:
             if self.hparams['env'] == 'FetchPush_variation1-v1' or self.hparams['env'] == 'FetchPush_variation2-v1':
                 self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(os.getcwd() + '/tl_models'
                                                                                                     '/FetchPush-v1'))

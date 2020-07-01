@@ -78,6 +78,7 @@ class Layer():
 
         # Configure buffers
         self.buffer_size = self.buffer_size_ceiling
+        # TODO: Check influence of batch size
         self.batch_size = 256
 
         def reward_fun(ag_2, g):
@@ -552,7 +553,7 @@ class Layer():
 
     # Update actor and critic networks
     def learn(self, num_updates):
-        if self.layer_number == 1 or self.FLAGS.transfer == False or self.hparams["tl-mode"] == "separate_LL":
+        if self.layer_number == 1 or self.hparams["use_tl"] == False or self.hparams["tl-mode"] == "separate_LL":
 
             if self.hparams["modules"][self.layer_number] == "baselineDDPG":
                 if self.FLAGS.verbose or True:
@@ -566,6 +567,7 @@ class Layer():
                     self.policy.train()
 
                 # Update all target nets
+                # TODO: Check influence of update to target nets
                 self.policy.update_target_net()
 
             elif self.hparams["modules"][self.layer_number] == "actorcritic":
