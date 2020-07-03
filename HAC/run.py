@@ -30,7 +30,7 @@ The key hyperparameters are:
     tl-mode (str): Mode for transfer-learning, which is only relevant when the --transfer flag is used (shared_LL, separate_LL, shared_LL_noHAT)
 """
 hyperparameters = {
-        "env"          : ['FetchPush_variation2-v1'],
+        "env"          : ['FetchPickAndPlace_variation1-v1', 'FetchPickAndPlace_variation2-v1'],
         "ac_n"         : [0.2],
         "sg_n"         : [0.2],
         "replay_k"     : [4],
@@ -40,7 +40,7 @@ hyperparameters = {
         "buffer"       : [['transitions', 'transitions']],
         "samp_str"     : ['HAC'],
         "modules"      : [['baselineDDPG', 'actorcritic']],
-        "use_tl"       : [True],
+        "use_tl"       : [False, True],
         "tl-mode"      : ["separate_LL"]
 
     }
@@ -58,10 +58,10 @@ Parameters for the runs
     FLAGS.num_test_episodes (int): Number of testing episodes after every epoch of training
 """
 
-NUM_RUNS = 1 #multiprocessing.cpu_count() // len(hparams)
+NUM_RUNS = 16
 NUM_BATCH = 401
 
-#FLAGS.np = multiprocessing.cpu_count()
+FLAGS.np = 64
 
 FLAGS.time_scale = 10
 FLAGS.max_actions = 50

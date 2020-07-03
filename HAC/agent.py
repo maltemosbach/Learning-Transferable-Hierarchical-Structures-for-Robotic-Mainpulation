@@ -18,6 +18,7 @@ class Agent():
     def __init__(self, FLAGS, env, writer, writer_graph, sess, hparams):
 
         self.FLAGS = FLAGS
+        self.env = env
         self.sess = sess
         self.writer = writer
         self.writer_graph = writer_graph
@@ -63,6 +64,13 @@ class Agent():
         # Project current state onto the subgoal and end goal spaces
         proj_subgoal = env.project_state_to_subgoal(env.sim, self.current_state)
         proj_end_goal = env.project_state_to_end_goal(env.sim, self.current_state)
+
+        if self.hparams["env"] == "FetchPush_variation1-v1":
+            body_id = self.env.gymEnv.env.sim.model.body_name2id('obstacle0')
+            if (1.3 <= self.env.obs['observation'][3] <= 1.55) or self.env.obs['observation'][4] > 0.775:
+                self.env.gymEnv.env.sim.model.body_pos[body_id] = np.array([1.3, 0.75, 0.3])
+            else:
+                self.env.gymEnv.env.sim.model.body_pos[body_id] = np.array([1.3, 0.75, 0.475])
 
         for i in range(self.hparams["layers"]):
 
@@ -117,7 +125,8 @@ class Agent():
 
         if not os.path.exists(self.model_dir):
             os.makedirs(self.model_dir)
-        if not os.path.exists(self.model_dir_lowest_layer) and (self.hparams["env"] == "FetchPush-v1" or self.hparams["env"] == "FetchPickAndPlace-v1"):
+        if not os.path.exists(self.model_dir_lowest_layer) and (
+                self.hparams["env"] == "FetchPush-v1" or self.hparams["env"] == "FetchPickAndPlace-v1"):
             os.makedirs(self.model_dir_lowest_layer)
 
         # Initialize actor/critic networks
