@@ -38,6 +38,7 @@ def init_runs(date, hparams, num_runs, data_dir, FLAGS, NUM_BATCH, save_models, 
         hp_dir = hp_dir
         logdir = "./tb/" + date + hp_dir + "run_" + str(idx_run)
         modeldir = "./saved_agents/" + hp_dir + "models" + "_" + str(idx_run)
+        tl_modeldir = "./saved_tl_models/" + hp_dir + "tl_models" + "_" + str(idx_run)
 
         sess = tf.compat.v1.InteractiveSession()
         writer_graph = tf.compat.v1.summary.FileWriter(logdir)
@@ -72,11 +73,10 @@ def init_runs(date, hparams, num_runs, data_dir, FLAGS, NUM_BATCH, save_models, 
 
 
         # Begin training
-        success_rates_run, Q_val_table_run, critic_loss_layer0, critic_loss_layer1 = create_run(FLAGS,env,agent,writer,sess, NUM_BATCH)
+        success_rates_run, critic_loss_layer0, critic_loss_layer1 = create_run(FLAGS,env,agent,writer,sess, NUM_BATCH)
 
-        if FLAGS.retrain:
+        if FLAGS.retrain or FLAGS.transfer:
             np.save(data_dir + "/sr_run_" + str(idx_run) + ".npy", success_rates_run)
-            np.save(data_dir + "/Q_val_table_run_" + str(idx_run) + ".npy", Q_val_table_run)
             np.save(data_dir + "/critic_loss_layer0_run_" + str(idx_run) + ".npy", critic_loss_layer0)
             np.save(data_dir + "/critic_loss_layer1_run_" + str(idx_run) + ".npy", critic_loss_layer1)
             if m == 0:
@@ -89,6 +89,12 @@ def init_runs(date, hparams, num_runs, data_dir, FLAGS, NUM_BATCH, save_models, 
         # Saving models 
         if save_models:
             shutil.move("./models", modeldir)
+            """
+            if hparams["env"] == "FetchPush-v1":
+                shutil.move("./tl_models/FetchPush-v1", tl_modeldir)
+            elif hparams["env"] == "FetchPickAndPlace-v1":
+                shutil.move("./tl_models/FetchPickAndPlace-v1", tl_modeldir)
+            """
 
 
         sess.close()

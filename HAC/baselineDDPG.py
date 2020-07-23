@@ -21,7 +21,7 @@ def dims_to_shapes(input_dims):
 class DDPG():
 
     def __init__(self, sess, env, hparams, batch_size, transitions_buffer, erb,
-        layer_number, FLAGS, hidden, layers, T, buffer_type='transitions', Q_lr=0.001, pi_lr=0.001, tau=0.05, 
+        layer_number, FLAGS, hidden, layers, T, buffer_type='transitions', Q_lr=0.001, pi_lr=0.001, tau=0.05,
         gamma=0.98, action_l2=1.0, norm_eps=0.01, norm_clip=5, clip_obs=200):
         """The new DDPG policy used inside the HAC algorithm. Code is a variation of the baselines DDPG implementation 
         made to fit the hierarchical framework.
@@ -32,7 +32,7 @@ class DDPG():
             hparams: hyperparameters set in run.py
             transitions_buffer: storing all experiences trainsition-wise
             erb: ExperienceReplayBuffer generating hindsight experiences during sampling
-            layer_number: number of this layyer in the HAC hierarchy
+            layer_number: number of this layer in the HAC hierarchy
             FLAGS: flags determining how the algorithm is run
             hidden (int): number of perceptrons in each layer
             layers (int): number of layers of the neural networks

@@ -553,7 +553,7 @@ class Layer():
 
     # Update actor and critic networks
     def learn(self, num_updates):
-        if self.layer_number == 1 or self.hparams["use_tl"] == False or self.hparams["tl-mode"] == "separate_LL":
+        if self.layer_number == 1 or self.hparams["use_tl"] == False or self.hparams["tl-mode"] != "fixed_LL":
 
             if self.hparams["modules"][self.layer_number] == "baselineDDPG":
                 if self.FLAGS.verbose or True:

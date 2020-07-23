@@ -25,13 +25,6 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
     critic_loss_layer0 = -1*np.ones(np.ceil(NUM_BATCH/2).astype(int))
     critic_loss_layer1 = -1*np.ones(np.ceil(NUM_BATCH/2).astype(int))
     ind = 0
-
-
-    Q_VAL_SAMPLING_FREQ = 5
-    # Create Q_val_tables (step, layer (0,1), x-dim (10), y-dim (14))
-    Q_val_table = np.ones((np.floor(NUM_BATCH/Q_VAL_SAMPLING_FREQ).astype(int)+1, 2, 20, 28))
-    
-
     
     # Determine training mode.  If not testing and not solely training, interleave training and testing to track progress
     mix_train_test = False
@@ -93,67 +86,6 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
 
             print("\n--- END TESTING ---\n")
 
-        # Create Q-function matrix if it is the first or last batch
-        if batch % Q_VAL_SAMPLING_FREQ == 0:
-            Q_vals_layer_0 = np.ones((20, 28))
-            Q_vals_layer_1 = np.ones((20, 28))
-
-            # - - - - Q-vals for FetchReach - - - - 
-            # Goal is placed near the top left of the plane. For layer 0 the possible states in the plane are evaluated.
-            # For layer 1 the position of the gripper is the closer to the bottom right and the actions (subgoals) in the plane
-            # are evaluated.
-            if env.name == "FetchReach-v1":
-                g = np.array([1.345, 0.73, 0.45])
-                o = np.zeros([20, 28, 10])
-
-                for i in range(20):
-                    for j in range(28):
-                        o[i, j, :] = np.array([1.0625 + i*0.025, 0.4125 + j*0.025, 0.5,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-                        Q_vals_layer_0[i, j] = agent.layers[0].policy.get_Q_values_pi(o[i, j, :], g, np.array([0, 0, 0, 0]), use_target_net=True)
-
-                if agent.hparams["layers"] > 1:
-                    g = np.array([1.45, 0.95, 0.45])
-                    o = np.array([1.21, 0.57, 0.42,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-                    u = np.empty((20, 28, 3))
-
-                    for i in range(20):
-                        for j in range(28):
-                            u[i, j, :] = np.array([1.0625 + i*0.025, 0.4125 + j*0.025, 0.5])
-                            if agent.layers[1].policy is not None:
-                                Q_vals_layer_1[i, j] = agent.layers[1].policy.get_Q_values_u(o, g, u[i, j, :], use_target_net=True)
-                            elif agent.layers[1].critic is not None and agent.hparams["modules"][1] == "TD3":
-                                Q_vals_layer_0[i, j] = agent.layers[1].critic.get_target_Q_value_1(np.reshape(o,(1,10)), np.reshape(g,(1,3)), np.reshape(u[i, j, :],(1,3)))
-                                Q_vals_layer_1[i, j] = agent.layers[1].critic.get_target_Q_value_2(np.reshape(o,(1,10)), np.reshape(g,(1,3)), np.reshape(u[i, j, :],(1,3)))
-                            elif agent.layers[1].critic is not None and agent.hparams["modules"][1] == "actorcritic":
-                                Q_vals_layer_1[i, j] = agent.layers[1].critic.get_target_Q_value(np.reshape(o,(1,10)), np.reshape(g,(1,3)), np.reshape(u[i, j, :],(1,3)))
-
-
-            # - - - - Q-vals for FetchPush and FetchPickAndPlace - - - - 
-            elif env.name == "FetchPush-v1" or env.name == "FetchPush_variation1-v1" or env.name == "FetchPush_variation2-v1" or env.name == "FetchPickAndPlace-v1" or env.name == "FetchPickAndPlace_variation1-v1" or env.name == "FetchPickAndPlace_variation2-v1":
-                g = np.array([1.15, 0.6, 0.5])
-                o = np.zeros([20, 28, 25])
-
-                for i in range(20):
-                    for j in range(28):
-                        o[i, j, :] = np.array([1.5, 1.0, 0.45, 1.0625 + i*0.025, 0.4125 + j*0.025, 0.45,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-                        Q_vals_layer_0[i, j] = agent.layers[0].policy.get_Q_values_pi(o[i, j, :], g, np.array([0, 0, 0, 0]), use_target_net=False)
-
-                if agent.hparams["layers"] > 1:
-                    o = np.array([1.5, 1.0, 0.45,  1.4, 0.9, 0.45, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-                    u = np.empty((20, 28, 3))        
-                    for i in range(20):
-                        for j in range(28):
-                            u[i, j, :] = np.array([1.0625 + i*0.025, 0.4125 + j*0.025, 0.45])
-                            if agent.layers[1].policy is not None:
-                                Q_vals_layer_1[i, j] = agent.layers[1].policy.get_Q_values_u(o, g, u[i, j, :], use_target_net=False)
-                            elif agent.layers[1].critic is not None:
-                                Q_vals_layer_1[i, j] = agent.layers[1].critic.get_target_Q_value(np.reshape(o,(1,25)), np.reshape(g,(1,3)), np.reshape(u[i, j, :],(1,3)))
-
-            Q_val_table[(batch//Q_VAL_SAMPLING_FREQ), 0, :, :] = Q_vals_layer_0
-            Q_val_table[(batch//Q_VAL_SAMPLING_FREQ), 1, :, :] = Q_vals_layer_1
-
-
-
     if FLAGS.play:
         input("Play the trained agent ...")
         agent.FLAGS.show = True
@@ -175,4 +107,4 @@ def create_run(FLAGS,env,agent,writer,sess, NUM_BATCH):
             pass
 
 
-    return np.copy(success_rate_plt), np.copy(Q_val_table), np.copy(critic_loss_layer0), np.copy(critic_loss_layer1)
+    return np.copy(success_rate_plt), np.copy(critic_loss_layer0), np.copy(critic_loss_layer1)

@@ -27,7 +27,7 @@ def nn_layer(input_layer, num_next_neurons, is_output=False):
 
 
 def _get_combinations(combinations):
-    hparams = [{}] *len(combinations["use_tl"])*len(combinations["modules"])*len(combinations["samp_str"])*len(combinations["buffer"])*len(combinations["sg_test_perc"])*len(combinations["use_target"])*len(combinations["layers"])*len(combinations["replay_k"])*len(combinations["sg_n"])*len(combinations["ac_n"])*len(combinations["env"])
+    hparams = [{}] *len(combinations["tl-mode"])*len(combinations["use_tl"])*len(combinations["modules"])*len(combinations["samp_str"])*len(combinations["buffer"])*len(combinations["sg_test_perc"])*len(combinations["use_target"])*len(combinations["layers"])*len(combinations["replay_k"])*len(combinations["sg_n"])*len(combinations["ac_n"])*len(combinations["env"])
 
     for h in range(len(combinations["env"])):
         for i in range(len(combinations["ac_n"])):

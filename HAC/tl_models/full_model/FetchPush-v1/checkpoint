@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/maltemosbach/PycharmProjects/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/HAC/tl_models/full_model/FetchPush-v1/HAC.ckpt-43"
+all_model_checkpoint_paths: "/Users/maltemosbach/PycharmProjects/Learning-Transferable-Hierarchical-Structures-for-Robotic-Mainpulation/HAC/tl_models/full_model/FetchPush-v1/HAC.ckpt-43"

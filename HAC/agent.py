@@ -67,10 +67,13 @@ class Agent():
 
         if self.hparams["env"] == "FetchPush_variation1-v1":
             body_id = self.env.gymEnv.env.sim.model.body_name2id('obstacle0')
-            if (1.3 <= self.env.obs['observation'][3] <= 1.55) or self.env.obs['observation'][4] > 0.775:
-                self.env.gymEnv.env.sim.model.body_pos[body_id] = np.array([1.3, 0.75, 0.3])
+            if (1.365 <= self.env.obs['observation'][3] <= 1.485 and 0.55 <= self.env.obs['observation'][4]) or self.env.obs['observation'][4] > 0.775:
+                if self.env.gymEnv.env.sim.model.body_pos[body_id][2] > 0.315001:
+                    self.env.gymEnv.env.sim.model.body_pos[body_id] = self.env.gymEnv.env.sim.model.body_pos[body_id] + np.array([0.0, 0.0, -0.04])
             else:
-                self.env.gymEnv.env.sim.model.body_pos[body_id] = np.array([1.3, 0.75, 0.475])
+                if self.env.gymEnv.env.sim.model.body_pos[body_id][2] < 0.47499:
+                    self.env.gymEnv.env.sim.model.body_pos[body_id] = self.env.gymEnv.env.sim.model.body_pos[
+                                                                          body_id] + np.array([0.0, 0.0, 0.04])
 
         for i in range(self.hparams["layers"]):
 
@@ -138,27 +141,52 @@ class Agent():
 
         # For transfer learning, restore lowest layer
         if self.hparams["use_tl"] == True:
-            if self.hparams['env'] == 'FetchPush_variation1-v1' or self.hparams['env'] == 'FetchPush_variation2-v1':
-                self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(os.getcwd() + '/tl_models'
-                                                                                                    '/FetchPush-v1'))
-            elif self.hparams['env'] == 'FetchPickAndPlace_variation1-v1' or \
-                    self.hparams['env'] == 'FetchPickAndPlace_variation2-v1':
-                self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(
-                    '{0}/tl_models/FetchPickAndPlace-v1'.format(os.getcwd())))
+            if self.hparams["tl-mode"] == 'LL' or self.hparams["tl-mode"] == 'fixed_LL':
+                if self.hparams['env'] == 'FetchPush_variation1-v1' or self.hparams['env'] == 'FetchPush_variation2-v1':
+                    self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(os.getcwd() + '/tl_models'
+                                                                                                        '/FetchPush-v1'))
+                elif self.hparams['env'] == 'FetchPickAndPlace_variation1-v1' or \
+                        self.hparams['env'] == 'FetchPickAndPlace_variation2-v1':
+                    self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(
+                        '{0}/tl_models/FetchPickAndPlace-v1'.format(os.getcwd())))
 
-            elif self.hparams['env'] == 'FetchPush-v1':
-                print("WARNING: Training on the regular environment with transfer learning!")
-                time.sleep(5)
-                self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(os.getcwd() + '/tl_models'
-                                                                                                    '/FetchPush-v1'))
-            elif self.hparams['env'] == 'FetchPickAndPlace-v1':
-                print("WARNING: Training on the regular environment with transfer learning!")
-                time.sleep(5)
-                self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(
-                    '{0}/tl_models/FetchPickAndPlace-v1'.format(os.getcwd())))
+                elif self.hparams['env'] == 'FetchPush-v1':
+                    print("WARNING: Training on the regular environment with transfer learning!")
+                    time.sleep(5)
+                    self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(os.getcwd() + '/tl_models'
+                                                                                                        '/FetchPush-v1'))
+                elif self.hparams['env'] == 'FetchPickAndPlace-v1':
+                    print("WARNING: Training on the regular environment with transfer learning!")
+                    time.sleep(5)
+                    self.saver_lowest_layer.restore(self.sess, tf.train.latest_checkpoint(
+                        '{0}/tl_models/FetchPickAndPlace-v1'.format(os.getcwd())))
 
-            else:
-                assert False, "Error in transfer learning loading of variables!"
+                else:
+                    assert False, "Error in transfer learning loading of variables!"
+
+            elif self.hparams["tl-mode"] == 'full':
+                if self.hparams['env'] == 'FetchPush_variation1-v1' or self.hparams['env'] == 'FetchPush_variation2-v1':
+                    self.saver.restore(self.sess, tf.train.latest_checkpoint(os.getcwd() + '/tl_models/full_model'
+                                                                                                        '/FetchPush-v1'))
+                elif self.hparams['env'] == 'FetchPickAndPlace_variation1-v1' or \
+                        self.hparams['env'] == 'FetchPickAndPlace_variation2-v1':
+                    self.saver.restore(self.sess, tf.train.latest_checkpoint(
+                        '{0}/tl_models/full_model/FetchPickAndPlace-v1'.format(os.getcwd())))
+
+                elif self.hparams['env'] == 'FetchPush-v1':
+                    print("WARNING: Training on the regular environment with transfer learning!")
+                    time.sleep(5)
+                    self.saver.restore(self.sess, tf.train.latest_checkpoint(os.getcwd() + '/tl_models/full_model'
+                                                                                                        '/FetchPush-v1'))
+                elif self.hparams['env'] == 'FetchPickAndPlace-v1':
+                    print("WARNING: Training on the regular environment with transfer learning!")
+                    time.sleep(5)
+                    self.saver.restore(self.sess, tf.train.latest_checkpoint(
+                        '{0}/tl_models/full_model/FetchPickAndPlace-v1'.format(os.getcwd())))
+
+                else:
+                    assert False, "Error in transfer learning loading of variables!"
+
 
         # Continue with all layers
         if self.FLAGS.contin == True:

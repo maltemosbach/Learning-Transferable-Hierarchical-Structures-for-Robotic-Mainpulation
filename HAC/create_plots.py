@@ -87,7 +87,7 @@ for j in range(len(date_paths)):
         plots.append(current_sr_array)
         colors = [(0.3, 0.5, 0.9, 1.0), (0.2, 0.825, 0.2, 1.0), (1.0, 0.25, 0.25, 1.0), (0.7, 0.5, 0.85, 1.0), (0.0, 0.0, 0.0, 1.0), (0.5, 0.5, 0.5, 1.0), (0.5, 0.5, 0.0, 1.0), (0.5, 0.0, 0.5, 1.0), (0.0, 0.5, 0.5, 1.0)]
         label = True
-        labels = ['ERB', 'transitions buffer']
+        labels = ['FetchPush-v1']
 
 
         x = np.arange(0, test_graph.shape[0], 1)
